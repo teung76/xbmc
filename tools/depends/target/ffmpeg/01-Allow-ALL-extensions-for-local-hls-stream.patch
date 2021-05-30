@@ -1,0 +1,32 @@
+From 9690d94a1e95f85496af0a40e9d57bbcccd8dfe4 Mon Sep 17 00:00:00 2001
+From: Ung Teng En <ung_teng_en@hotmail.com>
+Date: Sun, 30 May 2021 20:23:00 +0800
+Subject: [PATCH] Allow ALL extensions for local hls stream.
+
+---
+ libavformat/hls.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/libavformat/hls.c b/libavformat/hls.c
+index 3c7e197..b00d175 100644
+--- a/libavformat/hls.c
++++ b/libavformat/hls.c
+@@ -649,13 +649,8 @@ static int open_url(AVFormatContext *s, AVIOContext **pb, const char *url,
+ 
+     // only http(s) & file are allowed
+     if (av_strstart(proto_name, "file", NULL)) {
+-        if (strcmp(c->allowed_extensions, "ALL") && !av_match_ext(url, c->allowed_extensions)) {
+-            av_log(s, AV_LOG_ERROR,
+-                "Filename extension of \'%s\' is not a common multimedia extension, blocked for security reasons.\n"
+-                "If you wish to override this adjust allowed_extensions, you can set it to \'ALL\' to allow all\n",
+-                url);
+-            return AVERROR_INVALIDDATA;
+-        }
++        // Default to allow ALL extensions
++        ;
+     } else if (av_strstart(proto_name, "http", NULL)) {
+         is_http = 1;
+     } else if (av_strstart(proto_name, "data", NULL)) {
+-- 
+2.30.2
+
