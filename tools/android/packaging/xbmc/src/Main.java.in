@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.Gravity;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.View;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -175,7 +177,17 @@ public class Main extends NativeActivity implements Choreographer.FrameCallback
           {
             public void run()
             {
-              if (android.os.Build.VERSION.SDK_INT >= 19)
+              if (android.os.Build.VERSION.SDK_INT >= 30)
+              {
+                getWindow().setDecorFitsSystemWindows(false);
+                WindowInsetsController controller = getWindow().getInsetsController();
+                if (controller != null)
+                {
+                    controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                    controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                }
+              }
+              else if (android.os.Build.VERSION.SDK_INT >= 19)
               {
                 // Immersive mode
 
@@ -229,7 +241,17 @@ public class Main extends NativeActivity implements Choreographer.FrameCallback
   {
     super.onResume();
 
-    if (android.os.Build.VERSION.SDK_INT >= 19)
+    if (android.os.Build.VERSION.SDK_INT >= 30)
+    {
+      getWindow().setDecorFitsSystemWindows(false);
+      WindowInsetsController controller = getWindow().getInsetsController();
+      if (controller != null)
+      {
+        controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+      }
+    }
+    else if (android.os.Build.VERSION.SDK_INT >= 19)
     {
       // Immersive mode
 
