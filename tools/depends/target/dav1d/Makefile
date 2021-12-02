@@ -1,6 +1,6 @@
 -include ../../Makefile.include
 include DAV1D-VERSION
-DEPS = Makefile DAV1D-VERSION
+DEPS = Makefile DAV1D-VERSION 0001-Use-cpu-to-detect-x86-and-x86_64-in-meson.patch
 
 ifeq ($(CROSS_COMPILING), yes)
   DEPS += ../../Makefile.include
@@ -64,6 +64,7 @@ $(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
 	rm -rf $(PLATFORM)/*; mkdir -p $(PLATFORM)
 	cd $(PLATFORM); $(ARCHIVE_TOOL) $(ARCHIVE_TOOL_FLAGS) $(TARBALLS_LOCATION)/$(ARCHIVE)
 	cd $(PLATFORM); rm -rf build; mkdir -p build
+	cd $(PLATFORM); patch -p 1 < ../0001-Use-cpu-to-detect-x86-and-x86_64-in-meson.patch
 	cd $(PLATFORM); $(CONFIGURE) . build
 
 $(LIBDYLIB): $(PLATFORM)

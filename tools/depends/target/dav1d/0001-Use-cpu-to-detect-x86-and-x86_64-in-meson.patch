@@ -1,0 +1,82 @@
+From f70961d88fd928258a57875c613917349de9e363 Mon Sep 17 00:00:00 2001
+From: Ung Teng En <ung.teng.en@gmail.com>
+Date: Fri, 3 Dec 2021 15:33:24 +0800
+Subject: [PATCH] Use host_machine.cpu() to detect x86 and x86_64 in meson
+ script.
+
+---
+ meson.build | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 07b2586..4034bd7 100644
+--- a/meson.build
++++ b/meson.build
+@@ -62,8 +62,8 @@ endforeach
+ 
+ # ASM option
+ is_asm_enabled = (get_option('enable_asm') == true and
+-    (host_machine.cpu_family() == 'x86' or
+-     (host_machine.cpu_family() == 'x86_64' and cc.get_define('__ILP32__') == '') or
++    (host_machine.cpu() == 'x86' or
++     (host_machine.cpu() == 'x86_64' and cc.get_define('__ILP32__') == '') or
+      host_machine.cpu_family() == 'aarch64'      or
+      host_machine.cpu_family().startswith('arm') or
+      host_machine.cpu() == 'ppc64le'))
+@@ -109,7 +109,7 @@ if host_machine.system() == 'windows'
+         cdata.set('ftello', '_ftelli64')
+     endif
+ 
+-    if (host_machine.cpu_family() == 'x86_64' and cc.get_id() == 'gcc')
++    if (host_machine.cpu() == 'x86_64' and cc.get_id() == 'gcc')
+         optional_arguments += '-mcmodel=small'
+     endif
+ 
+@@ -248,7 +248,7 @@ if cc.get_argument_syntax() != 'msvc'
+       '-Werror=missing-prototypes',
+       '-Wshorten-64-to-32',
+     ]
+-    if host_machine.cpu_family() == 'x86'
++    if host_machine.cpu() == 'x86'
+         optional_arguments += [
+           '-msse2',
+           '-mfpmath=sse',
+@@ -294,7 +294,7 @@ cdata.set10('ENDIANNESS_BIG', host_machine.endian() == 'big')
+ if host_machine.cpu_family().startswith('x86')
+     if get_option('stack_alignment') > 0
+         stack_alignment = get_option('stack_alignment')
+-    elif host_machine.cpu_family() == 'x86_64'
++    elif host_machine.cpu() == 'x86_64'
+         if cc.has_argument('-mpreferred-stack-boundary=6')
+             stackalign_flag = ['-mpreferred-stack-boundary=6']
+             stackrealign_flag = ['-mincoming-stack-boundary=4']
+@@ -358,13 +358,13 @@ if (is_asm_enabled and
+ endif
+ 
+ cdata.set10('ARCH_X86', host_machine.cpu_family().startswith('x86'))
+-cdata.set10('ARCH_X86_64', host_machine.cpu_family() == 'x86_64')
+-cdata.set10('ARCH_X86_32', host_machine.cpu_family() == 'x86')
++cdata.set10('ARCH_X86_64', host_machine.cpu() == 'x86_64')
++cdata.set10('ARCH_X86_32', host_machine.cpu() == 'x86')
+ 
+ if host_machine.cpu_family().startswith('x86')
+     cdata_asm.set('private_prefix', 'dav1d')
+-    cdata_asm.set10('ARCH_X86_64', host_machine.cpu_family() == 'x86_64')
+-    cdata_asm.set10('ARCH_X86_32', host_machine.cpu_family() == 'x86')
++    cdata_asm.set10('ARCH_X86_64', host_machine.cpu() == 'x86_64')
++    cdata_asm.set10('ARCH_X86_32', host_machine.cpu() == 'x86')
+     cdata_asm.set10('PIC', true)
+ endif
+ 
+@@ -417,7 +417,7 @@ if is_asm_enabled and host_machine.cpu_family().startswith('x86')
+     else
+         nasm_format = 'elf'
+     endif
+-    if host_machine.cpu_family() == 'x86_64'
++    if host_machine.cpu() == 'x86_64'
+         nasm_format += '64'
+     else
+         nasm_format += '32'
+-- 
+2.30.2
+
